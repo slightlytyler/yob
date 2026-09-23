@@ -30,7 +30,7 @@ Adjust the keyword list if the results look thin — but keep queries concise (G
 **Keep** (these are trackable opportunities):
 - Direct emails from a named person at a recruiting agency or company (has a real reply-able email address).
 - LinkedIn InMail (`sender: inmail-hit-reply@linkedin.com`) — a real recruiter pitching a real role.
-- LinkedIn connection requests from someone whose title is recruiting-related (`sender: invitations@linkedin.com`), even with no role pitched yet.
+- LinkedIn connection requests (`sender: invitations@linkedin.com`) whose personalized note — fetched in full, see step 4 — references a role, hiring, or a company. **Don't gate this on job title.** Founders, hiring managers, and generic "I work with 250+ startups" senders all pitch real roles this way just as often as people with a "recruiter" title; the title alone is not a reliable signal (see the Josh Markowitz / Hits Only example in step 4).
 
 **Discard as noise** (do not add rows for these):
 - `messages-noreply@linkedin.com` salary/market digests ("Senior Software Engineer insights: $XXXk/yr..."), "X is a top company hiring near you," "X people viewed your profile," "You're getting noticed."
@@ -41,11 +41,17 @@ Adjust the keyword list if the results look thin — but keep queries concise (G
 
 If genuinely unsure whether something counts, ask the user rather than guessing — cheap to check, expensive to pollute the tracker.
 
-## 4. Critical extraction rule: LinkedIn InMail sender name
+## 4. Critical extraction rule: always fetch the full thread body — for InMail *and* connection requests
 
-**The `from` header and subject line are useless for identifying who sent an InMail** — every InMail comes from `inmail-hit-reply@linkedin.com` regardless of recruiter, and the subject is just the pitch's headline. The `search_threads` snippet also won't reliably show the name.
+**Never classify or write a row from the `search_threads` snippet alone, for either message type.** The snippet is unreliable in different ways for each:
 
-To get the real name, agency, and full pitch: call `get_thread` with `messageFormat: PLAIN_TEXT` on that thread. The recruiter's LinkedIn display name is the **first line of the body, directly above the repeated subject line and the "Reply" / `linkedin.com/messaging/thread/...` link**, e.g.:
+**InMail** (`sender: inmail-hit-reply@linkedin.com`): the `from` header and subject line are useless for identifying who sent it — every InMail comes from the same relay address regardless of recruiter, and the subject is just the pitch's headline.
+
+**Connection requests** (`sender: invitations@linkedin.com`): the snippet usually shows only generic boilerplate — "X is waiting for your response," "X wants to connect" — even when the sender wrote a real personalized note pitching a specific role. That note is invisible until you fetch the thread. Example: a connection request from "Josh Markowitz, Founder @ Hits Only" had subject "I want to connect" and a snippet that said only "waiting for your response" — but the actual note read *"I might have an epic frontend role for you @ Circle or some other fantastic positions if you open to NYC."* Skipping the fetch on connection requests (as this skill used to instruct) misses exactly this kind of message, and title-based filtering would have excluded it too since "Founder" isn't a recruiting title.
+
+To get the real name, agency, full pitch, or personal note: call `get_thread` with `messageFormat: PLAIN_TEXT` on **every** InMail and every connection request before deciding whether to keep it or how to fill its row. Use `PLAIN_TEXT`, not `FULL_CONTENT`'s `html_body` — LinkedIn's HTML rendering can drop the personalized note entirely (confirmed on the Josh Markowitz thread: `html_body` only had the generic invite template plus "people you may know," while `plaintext_body` had the actual note) even though it's present in plaintext.
+
+For InMail, the recruiter's LinkedIn display name is the **first line of the body, directly above the repeated subject line and the "Reply" / `linkedin.com/messaging/thread/...` link**, e.g.:
 
 ```
 Let's Chat! Senior Full Stack Engineer @ Airbyte
@@ -59,9 +65,9 @@ Hey Tyler!
 ...
 ```
 
-Their title/agency is usually in the signature block at the end of the body (e.g. "Abby — Senior Technical Recruiter @ Airbyte", "Griffin Lewin — Director of Recruiting @ Quantum"). Always fetch the full body for every InMail thread before writing a tracker row — never leave a row as "(unnamed recruiter)" without having tried `get_thread` first. While in there, also grab: comp range, location/remote policy, and whether the recruiter is in-house or a third-party agency (phrases like "I work with 250+ VC-backed startups" or "partnering with [company]" signal agency/embedded recruiter, not in-house).
+Their title/agency is usually in the signature block at the end of the body (e.g. "Abby — Senior Technical Recruiter @ Airbyte", "Griffin Lewin — Director of Recruiting @ Quantum"). Never leave a row as "(unnamed recruiter)" without having tried `get_thread` first. While in there, also grab: comp range, location/remote policy, and whether the sender is in-house or a third-party agency (phrases like "I work with 250+ VC-backed startups" or "partnering with [company]" signal agency/embedded recruiter, not in-house).
 
-LinkedIn connection-request emails (`invitations@linkedin.com`) already include the name/title/company in the snippet — no extra fetch needed there.
+For connection requests, the personal note (if any) appears after the sender's name/title, before the "Accept" / "View profile" links — read it in full and use it to decide both inclusion (step 3) and the Role(s) Mentioned field, rather than defaulting to "Unspecified - no role pitched yet" without checking.
 
 ## 5. Tracker sheet schema
 
@@ -86,7 +92,7 @@ One row per **recruiter relationship**, not per role — a single recruiter/comp
 
 To "update" the tracker:
 
-1. Compose the full CSV (all existing rows + new/corrected ones — always the complete dataset, not a diff).
+1. Compose the full CSV (all existing rows + new/corrected ones — always the complete dataset, not a diff). **Wrap every field containing a comma in double quotes** (and double up any literal `"` inside it) — an unquoted comma anywhere (a title like `"Founder @ X, Y"`, a note like `"(checked, none found)"`) silently shifts every column after it for that row. After composing, re-scan every field you just wrote for a bare `,` outside quotes before calling `create_file` — this has broken rows in practice (2026-09-23 run).
 2. `create_file` with the same `title` ("Job Search - Recruiter Tracker"), `contentMimeType: text/csv`, and the full CSV as `textContent`. Drive auto-converts CSV to a native Google Sheet.
 3. `trash_file` the previous version's fileId (reversible — do not hard-delete).
 4. Give the user the new file's `viewUrl`. **The URL changes on every run** — always hand over the fresh link rather than assuming the old one still resolves to current data (the old one still resolves, but to stale/trashed content).
