@@ -26,7 +26,7 @@ A thread can mention several roles (e.g. Josh Markowitz's four, Victoria's five)
 - `{{FirstName}}` — recruiter's first name
 - `{{MatchingRoles}}` — Variant A only: the specific role(s)/company name(s) that fit, referenced by name (e.g. "the Staff Frontend Engineer role at Fun.xyz" or, for several, "the Fun.xyz and Fomo roles")
 - `{{MismatchReason}}` — Variant B only: a brief, neutral description of the specific gap (e.g. "fully onsite in Chicago with no remote option" or "backend/SRE-focused rather than frontend") — state it factually, not apologetically
-- `{{ResumeLine}}` — always mentions the live resume link (https://slightlytyler.github.io); also mentions the attachment when one was actually sent. See the `recruiter-warm-intro` skill for the exact wording per channel.
+- `{{ResumeLine}}` — always just the live resume link (https://slightlytyler.github.io); never claims an attachment, on either channel. See the `recruiter-warm-intro` skill for the exact wording.
 
 ## Variant A — at least one role fits
 

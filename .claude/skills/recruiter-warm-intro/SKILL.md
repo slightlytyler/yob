@@ -17,7 +17,16 @@ moment). Tyler reviews every draft and sends it himself. Concretely:
 - **Never call** `mcp__claude_ai_Gmail__send_message`, `reply`, or `forward` for a recruiter
   thread from this skill.
 - For `Direct Email` sources, use `create_draft` only — it stays in Gmail Drafts for Tyler to
-  review and send manually.
+  review and send manually. Always pass `replyToMessageId` (the thread's most recent message
+  ID) so the draft threads under the existing conversation.
+- **Never use `update_draft` to fix a reply draft's text.** Confirmed 2026-09-24: `update_draft`
+  has no `replyToMessageId` field, and calling it on a reply draft silently detaches it into a
+  new standalone thread — Gmail's threading breaks even though the subject still says "Re:".
+  If a draft needs correcting after creation, call `create_draft` again from scratch with the
+  same `replyToMessageId` and corrected body, then tell Tyler which of the two drafts in that
+  thread to delete (trashing a draft via the API requires `gmail.modify` scope, which this
+  connector may not have — check before assuming you can clean it up programmatically, and if
+  not, just tell him).
 - For `LinkedIn InMail` / `LinkedIn Connection Request` sources, there is no draft mechanism
   to use — replying via `inmail-hit-reply@linkedin.com` through Gmail would actually deliver
   the message into LinkedIn's system, so don't call any Gmail send/reply tool for these at
@@ -26,9 +35,9 @@ moment). Tyler reviews every draft and sends it himself. Concretely:
 
 ## 1. Pull the row's details and pick a variant
 
-From the tracker: `{{FirstName}}` (first name only, parsed out of Recruiter Name), the
-Role(s) Mentioned and Notes (for location/onsite details), and — critically — the **Source**
-column, which decides the resume line (step 2).
+From the tracker: `{{FirstName}}` (first name only, parsed out of Recruiter Name), and the
+Role(s) Mentioned and Notes (for location/onsite details). The **Source** column still
+determines how the draft gets delivered (step 3), just not the resume line anymore.
 
 Check every role the thread mentions against the template's fit criteria (remote or
 SoCal-hybrid; frontend/frontend-infra/platform focus) and pick a variant:
@@ -48,21 +57,24 @@ If unsure which way a role leans (e.g. comp/location ambiguous), ask Tyler rathe
 guessing — a wrongly-declined lead is wasted opportunity, and a wrongly-pursued one wastes
 both people's time.
 
-## 2. Resume line: attach vs. link
+## 2. Resume line: link only, never an attachment
 
-Tyler's resume lives at `~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf` and is also
-hosted at `https://slightlytyler.github.io`. `{{ResumeLine}}` applies to both variants and
-always mentions the live link; whether it also mentions an attachment depends on the tracker
-row's **Source**:
+`{{ResumeLine}}` is always `You can find my resume at https://slightlytyler.github.io.` — the
+same wording regardless of Source/channel. Never attach the PDF and never claim one is
+attached.
 
-| Source | `{{ResumeLine}}` |
-|---|---|
-| `Direct Email` (real address, replying via Gmail) | `Resume attached, and you can find an up to date version at https://slightlytyler.github.io.` — actually attach `~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf` to the reply/draft. |
-| `LinkedIn InMail` or `LinkedIn Connection Request` | `You can find my resume at https://slightlytyler.github.io.` — never claim something is attached; LinkedIn messages (and InMail replies routed through `inmail-hit-reply@linkedin.com`) don't carry attachments the recruiter will actually receive as a file. |
+**Why not attach:** `create_draft`'s `attachments[].content` field takes a literal base64
+string in the tool call — there's no file-path passthrough. Getting Tyler's resume PDF
+(`~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf`) into that field means reading it
+through `Read` (which returns it as numbered lines, since it's effectively one giant line)
+and retyping ~40K characters into the call by hand, with no way to verify afterward that the
+reconstruction was byte-exact. A single dropped or altered character silently corrupts the
+PDF a recruiter would receive. That risk isn't worth it for what a link accomplishes just as
+well — confirmed via direct instruction from Tyler (2026-09-24) after this was flagged.
 
-If the resume PDF at that path looks stale (check its modified time against the tracker
-row's date, or just ask), regenerate it from the `resume` repo before attaching rather than
-sending an outdated version.
+If the hosted resume at `https://slightlytyler.github.io` looks stale relative to a tracker
+row's date, regenerate it from the `resume` repo (see that repo's README) before drafting,
+rather than sending an outdated version — just don't attach it.
 
 ## 3. Fill the template and confirm
 
