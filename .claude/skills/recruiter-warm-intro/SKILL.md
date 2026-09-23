@@ -24,10 +24,29 @@ moment). Tyler reviews every draft and sends it himself. Concretely:
   all. Instead, output the filled-in text directly in the conversation for Tyler to copy and
   paste into LinkedIn himself.
 
-## 1. Pull the row's details
+## 1. Pull the row's details and pick a variant
 
-From the tracker: `{{FirstName}}` (first name only, parsed out of Recruiter Name), `{{Company}}`,
-`{{Role}}`, and — critically — the **Source** column, which decides the resume line (step 2).
+From the tracker: `{{FirstName}}` (first name only, parsed out of Recruiter Name), the
+Role(s) Mentioned and Notes (for location/onsite details), and — critically — the **Source**
+column, which decides the resume line (step 2).
+
+Check every role the thread mentions against the template's fit criteria (remote or
+SoCal-hybrid; frontend/frontend-infra/platform focus) and pick a variant:
+
+- **At least one role fits** → Variant A. Fill `{{MatchingRoles}}` by naming the fitting
+  role(s)/company(ies) specifically — don't just say "the role," and don't mention roles from
+  the same thread that don't fit (see Josh Markowitz or Victoria/Trope Talent rows for
+  threads with several roles to choose from).
+- **No role in the thread fits** → Variant B. Fill `{{MismatchReason}}` with the specific,
+  factual gap (e.g. "onsite in NYC with no remote option," "SRE-focused rather than
+  frontend") — pull this from the Role(s) Mentioned / Notes columns, don't guess.
+- **No role mentioned at all** (bare connection request, or one whose note has no role after
+  checking per the `recruiter-triage` skill) → neither variant's opening line; start from
+  "Quick background" per the template's Notes section.
+
+If unsure which way a role leans (e.g. comp/location ambiguous), ask Tyler rather than
+guessing — a wrongly-declined lead is wasted opportunity, and a wrongly-pursued one wastes
+both people's time.
 
 ## 2. Resume line: attach vs. link
 
@@ -40,15 +59,16 @@ tracker row's **Source**:
 | `Direct Email` (real address, replying via Gmail) | `Resume attached.` — actually attach `~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf` to the reply/draft. |
 | `LinkedIn InMail` or `LinkedIn Connection Request` | `Here's my resume: https://slightlytyler.github.io` — never claim something is attached; LinkedIn messages (and InMail replies routed through `inmail-hit-reply@linkedin.com`) don't carry attachments the recruiter will actually receive as a file. |
 
+Skip this step entirely for Variant B — it doesn't use `{{ResumeLine}}` (see the template's Notes).
+
 If the resume PDF at that path looks stale (check its modified time against the tracker
 row's date, or just ask), regenerate it from the `resume` repo before attaching rather than
 sending an outdated version.
 
 ## 3. Fill the template and confirm
 
-Substitute `{{FirstName}}`, `{{Company}}`, `{{Role}}`, `{{ResumeLine}}` into the template.
-If the row has no role/company yet (bare connection request), follow the template's own
-note and drop the opening line rather than inventing one.
+Substitute the chosen variant's placeholders (`{{FirstName}}` and either `{{MatchingRoles}}`
++ `{{ResumeLine}}`, or `{{MismatchReason}}`) into the template.
 
 Always show the filled draft in the conversation for review — even after calling
 `create_draft` for a `Direct Email` row, paste the same text back so Tyler doesn't have to
