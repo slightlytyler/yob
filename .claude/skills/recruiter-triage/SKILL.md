@@ -15,15 +15,19 @@ The Gmail connector (`mcp__claude_ai_Gmail__*`) only supports **one account at a
 
 ## 2. Search
 
-Run both queries with `search_threads` (`pageSize: 50`, `view: THREAD_VIEW_MINIMAL`, `newer_than` tuned to how far back you need):
+**Don't default to `newer_than:90d`.** On 2026-09-23, a 90-day window missed 15 real recruiter relationships spanning back to 2026-05-05 — including the single highest-value lead found so far (Josh Markowitz, three roles up to $1.5M comp) — because the sabbatical (and this pipeline) started in May, before any triage was happening, and a 90-day rolling window keeps sliding past that start date. **Use `after:2026/05/01` (Tyler's sabbatical start) instead of a relative `newer_than`, every run, until the user says otherwise.** A relative window is fine only once the backlog is confirmed clear and the user explicitly wants to move to incremental runs.
+
+Run both queries with `search_threads` (`pageSize: 50`, `view: THREAD_VIEW_MINIMAL`):
 
 ```
-in:inbox newer_than:90d (recruiter OR recruiting OR "talent acquisition" OR "reaching out" OR "open role" OR "open position" OR "job opportunity" OR hiring) -category:promotions
+in:inbox after:2026/05/01 (recruiter OR recruiting OR "talent acquisition" OR "reaching out" OR "open role" OR "open position" OR "job opportunity" OR hiring) -category:promotions
 
-in:inbox newer_than:90d (from:linkedin.com OR from:indeed.com OR from:greenhouse.io OR from:lever.co OR from:myworkday.com OR from:ziprecruiter.com)
+in:inbox after:2026/05/01 (from:linkedin.com OR from:indeed.com OR from:greenhouse.io OR from:lever.co OR from:myworkday.com OR from:ziprecruiter.com)
 ```
 
-Adjust the keyword list if the results look thin — but keep queries concise (Gmail search penalizes long literal phrases).
+The first query is full-text and can exceed the tool's output size over a long date range — if it errors on size, split it by date into smaller chunks (e.g. `after:X before:Y` windows a few weeks wide) rather than narrowing the date range back down, and also add `-from:linkedin.com` to it once you've separately covered LinkedIn via the second query, since direct-agency-email senders (their own company domains, e.g. `@aspensearch.com`, `@ingreatco.com`) are exactly what the keyword query catches that the LinkedIn-sender query cannot.
+
+Adjust the keyword list if results look thin, but keep queries concise (Gmail search penalizes long literal phrases). If the user references a specific message, name, or company you don't have in the tracker, don't assume you mis-scanned what you fetched — search by that exact name/phrase directly (drop the date filter entirely, `includeTrash: true`) before concluding it doesn't exist. That's how both the Josh Markowitz gap and this whole May–June backlog were found.
 
 ## 3. Classify: real outreach vs. noise
 
