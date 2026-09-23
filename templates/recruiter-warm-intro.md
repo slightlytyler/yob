@@ -26,7 +26,7 @@ A thread can mention several roles (e.g. Josh Markowitz's four, Victoria's five)
 - `{{FirstName}}` — recruiter's first name
 - `{{MatchingRoles}}` — Variant A only: the specific role(s)/company name(s) that fit, referenced by name (e.g. "the Staff Frontend Engineer role at Fun.xyz" or, for several, "the Fun.xyz and Fomo roles")
 - `{{MismatchReason}}` — Variant B only: a brief, neutral description of the specific gap (e.g. "fully onsite in Chicago with no remote option" or "backend/SRE-focused rather than frontend") — state it factually, not apologetically
-- `{{ResumeLine}}` — channel-dependent; see the `recruiter-warm-intro` skill for which line to use (direct email vs. LinkedIn)
+- `{{ResumeLine}}` — always mentions the live resume link (https://slightlytyler.github.io); also mentions the attachment when one was actually sent. See the `recruiter-warm-intro` skill for the exact wording per channel.
 
 ## Variant A — at least one role fits
 
@@ -61,7 +61,7 @@ Use when every role mentioned fails at least one fit criterion (and skip entirel
 > - Remote-first (I'm based in San Diego). Open to hybrid for a SoCal-based team, or roughly quarterly onsites for a non-local one. That's how my last role worked, 2-4 onsites a year.
 > - Frontend infrastructure / platform engineering, though in practice I work full-stack. My last role included building and maintaining a production GraphQL service end to end.
 >
-> If anything along those lines comes up, I'd love to hear about it.
+> If anything along those lines comes up, I'd love to hear about it. {{ResumeLine}}
 >
 > Best,
 > Tyler
@@ -71,5 +71,4 @@ Use when every role mentioned fails at least one fit criterion (and skip entirel
 - No role/company mentioned at all yet (e.g. a bare LinkedIn connection request with no personal note, or one whose note doesn't mention a role — see the `recruiter-triage` skill on checking for hidden notes first)? Use neither variant's opening line — start straight from "Quick background" / "I'm a frontend infrastructure engineer" instead of claiming a fit or mismatch that hasn't been stated.
 - If the thread already shows Tyler declined for a mismatched reason (see the Teema Group row — SRE, not frontend), don't reuse either variant verbatim there; it already has a targeted reply.
 - Where two recruiters at the same agency show up in the tracker (e.g. Glocomms, Aspen Search), it's fine to mention that you've heard from the agency before if it feels natural — no need to pretend it's the first contact.
-- Variant B doesn't include {{ResumeLine}} — don't push a resume on a role being declined; it only makes sense in the "something else on your desk" framing if the recruiter asks.
 - When filling `{{MatchingRoles}}` or `{{MismatchReason}}`, write it the way the rest of the template reads: commas and periods, not em dashes, and keep it to a plain factual clause rather than a marketing-y one.

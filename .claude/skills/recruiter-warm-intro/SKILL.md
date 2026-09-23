@@ -51,15 +51,14 @@ both people's time.
 ## 2. Resume line: attach vs. link
 
 Tyler's resume lives at `~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf` and is also
-hosted at `https://slightlytyler.github.io`. Which one to use depends entirely on the
-tracker row's **Source**:
+hosted at `https://slightlytyler.github.io`. `{{ResumeLine}}` applies to both variants and
+always mentions the live link; whether it also mentions an attachment depends on the tracker
+row's **Source**:
 
 | Source | `{{ResumeLine}}` |
 |---|---|
-| `Direct Email` (real address, replying via Gmail) | `Resume attached.` — actually attach `~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf` to the reply/draft. |
-| `LinkedIn InMail` or `LinkedIn Connection Request` | `Here's my resume: https://slightlytyler.github.io` — never claim something is attached; LinkedIn messages (and InMail replies routed through `inmail-hit-reply@linkedin.com`) don't carry attachments the recruiter will actually receive as a file. |
-
-Skip this step entirely for Variant B — it doesn't use `{{ResumeLine}}` (see the template's Notes).
+| `Direct Email` (real address, replying via Gmail) | `Resume attached, and you can find an up to date version at https://slightlytyler.github.io.` — actually attach `~/code/slightlytyler/resume/docs/Tyler_Martinez_CV.pdf` to the reply/draft. |
+| `LinkedIn InMail` or `LinkedIn Connection Request` | `You can find my resume at https://slightlytyler.github.io.` — never claim something is attached; LinkedIn messages (and InMail replies routed through `inmail-hit-reply@linkedin.com`) don't carry attachments the recruiter will actually receive as a file. |
 
 If the resume PDF at that path looks stale (check its modified time against the tracker
 row's date, or just ask), regenerate it from the `resume` repo before attaching rather than
@@ -67,8 +66,8 @@ sending an outdated version.
 
 ## 3. Fill the template and confirm
 
-Substitute the chosen variant's placeholders (`{{FirstName}}` and either `{{MatchingRoles}}`
-+ `{{ResumeLine}}`, or `{{MismatchReason}}`) into the template.
+Substitute the chosen variant's placeholders — `{{FirstName}}`, `{{ResumeLine}}`, and either
+`{{MatchingRoles}}` or `{{MismatchReason}}` — into the template.
 
 Always show the filled draft in the conversation for review — even after calling
 `create_draft` for a `Direct Email` row, paste the same text back so Tyler doesn't have to
