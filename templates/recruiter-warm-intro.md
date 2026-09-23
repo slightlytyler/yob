@@ -34,13 +34,13 @@ Use when the thread mentions a role (or roles) matching both fit criteria above.
 
 > Hi {{FirstName}},
 >
-> Thanks for reaching out — {{MatchingRoles}} sound like a good fit, I'd love to hear more.
+> Thanks for reaching out. {{MatchingRoles}} sound like a good fit, I'd love to hear more.
 >
-> Quick background: frontend infrastructure engineer, 10+ years experience, most recently 5 years at Coinbase owning the GraphQL data-layer platform that powers ~95% of UI surfaces and is used daily by 700+ engineers. I've been on sabbatical since May.
+> Quick background: frontend infrastructure engineer, 10+ years experience, most recently 5 years at Coinbase owning the GraphQL data-layer platform. It powers about 95% of UI surfaces and gets used daily by 700+ engineers. I've been on sabbatical since May.
 >
 > What I'm looking for more broadly:
 >
-> - Remote-first (I'm based in San Diego), open to hybrid for a SoCal-based team, or roughly quarterly onsites for a non-local one — that's how my last role worked (2-4 onsites/year)
+> - Remote-first (I'm based in San Diego). Open to hybrid for a SoCal-based team, or roughly quarterly onsites for a non-local one, that's how my last role worked, 2-4 onsites a year.
 > - Frontend infrastructure / platform engineering, though in practice I work full-stack. My last role included building and maintaining a production GraphQL service end to end.
 >
 > Happy to set up a quick call to discuss further. {{ResumeLine}}
@@ -54,7 +54,7 @@ Use when every role mentioned fails at least one fit criterion (and skip entirel
 
 > Hi {{FirstName}},
 >
-> Thanks for reaching out. Based on what you've described, {{MismatchReason}} — doesn't sound like the right fit for me right now.
+> Thanks for reaching out. Based on what you've described, {{MismatchReason}}, so it doesn't sound like the right fit for me right now.
 >
 > For context in case something else on your desk fits better: I'm a frontend infrastructure engineer, 10+ years experience, most recently 5 years at Coinbase owning their GraphQL data-layer platform. I'm remote-first (San Diego based), open to hybrid for a SoCal team or roughly quarterly onsites otherwise, and focused on frontend infrastructure / platform engineering, though in practice full-stack.
 >
@@ -69,3 +69,4 @@ Use when every role mentioned fails at least one fit criterion (and skip entirel
 - If the thread already shows Tyler declined for a mismatched reason (see the Teema Group row — SRE, not frontend), don't reuse either variant verbatim there; it already has a targeted reply.
 - Where two recruiters at the same agency show up in the tracker (e.g. Glocomms, Aspen Search), it's fine to mention that you've heard from the agency before if it feels natural — no need to pretend it's the first contact.
 - Variant B doesn't include {{ResumeLine}} — don't push a resume on a role being declined; it only makes sense in the "something else on your desk" framing if the recruiter asks.
+- When filling `{{MatchingRoles}}` or `{{MismatchReason}}`, write it the way the rest of the template reads: commas and periods, not em dashes, and keep it to a plain factual clause rather than a marketing-y one.
