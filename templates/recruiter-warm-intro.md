@@ -16,7 +16,7 @@ than the generic version alone.
 
 Before picking a variant, check every role the thread mentions against both of these:
 
-- **Location/setup**: remote, OR hybrid/onsite for a SoCal-based team. Onsite/hybrid for a non-SoCal team is *not* automatically a mismatch — Tyler's last role did quarterly onsites for a non-local team — but a role that's explicitly full-time onsite outside SoCal with no remote option is a mismatch.
+- **Location/setup**: remote, OR hybrid/onsite for a SoCal-based team. Onsite/hybrid for a non-SoCal team is _not_ automatically a mismatch — Tyler's last role did quarterly onsites for a non-local team — but a role that's explicitly full-time onsite outside SoCal with no remote option is a mismatch.
 - **Focus**: frontend, frontend infrastructure, or platform engineering. A role that's exclusively backend/SRE/DevOps/non-engineering with no frontend or platform-adjacent angle is a mismatch (see the Teema Group row — SRE only, already declined).
 
 A thread can mention several roles (e.g. Josh Markowitz's four, Victoria's five) with a mix of fits and mismatches — call out the ones that fit by name and simply don't mention the ones that don't; no need to explicitly reject the mismatched ones when at least one role in the same thread is worth pursuing.
@@ -40,7 +40,7 @@ Use when the thread mentions a role (or roles) matching both fit criteria above.
 >
 > What I'm looking for more broadly:
 >
-> - Remote-first (I'm based in San Diego). Open to hybrid for a SoCal-based team, or roughly quarterly onsites for a non-local one, that's how my last role worked, 2-4 onsites a year.
+> - Remote-first (I'm based in San Diego). Open to hybrid for a SoCal-based team, or roughly quarterly onsites for a non-local one. That's how my last role worked, 2-4 onsites a year.
 > - Frontend infrastructure / platform engineering, though in practice I work full-stack. My last role included building and maintaining a production GraphQL service end to end.
 >
 > Happy to set up a quick call to discuss further. {{ResumeLine}}
@@ -56,7 +56,10 @@ Use when every role mentioned fails at least one fit criterion (and skip entirel
 >
 > Thanks for reaching out. Based on what you've described, {{MismatchReason}}, so it doesn't sound like the right fit for me right now.
 >
-> For context in case something else on your desk fits better: I'm a frontend infrastructure engineer, 10+ years experience, most recently 5 years at Coinbase owning their GraphQL data-layer platform. I'm remote-first (San Diego based), open to hybrid for a SoCal team or roughly quarterly onsites otherwise, and focused on frontend infrastructure / platform engineering, though in practice full-stack.
+> For context in case something else comes across your desk, here's what I'm looking for more broadly:
+>
+> - Remote-first (I'm based in San Diego). Open to hybrid for a SoCal-based team, or roughly quarterly onsites for a non-local one. That's how my last role worked, 2-4 onsites a year.
+> - Frontend infrastructure / platform engineering, though in practice I work full-stack. My last role included building and maintaining a production GraphQL service end to end.
 >
 > If anything along those lines comes up, I'd love to hear about it.
 >
