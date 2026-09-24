@@ -23,10 +23,19 @@ moment). Tyler reviews every draft and sends it himself. Concretely:
   has no `replyToMessageId` field, and calling it on a reply draft silently detaches it into a
   new standalone thread — Gmail's threading breaks even though the subject still says "Re:".
   If a draft needs correcting after creation, call `create_draft` again from scratch with the
-  same `replyToMessageId` and corrected body, then tell Tyler which of the two drafts in that
-  thread to delete (trashing a draft via the API requires `gmail.modify` scope, which this
-  connector may not have — check before assuming you can clean it up programmatically, and if
-  not, just tell him).
+  same `replyToMessageId` and corrected body — this leaves the old draft behind as a duplicate
+  in the same thread (Gmail's Drafts list collapses same-thread drafts into one row, so it
+  won't visibly multiply, but the stale one is still there underneath).
+- **Cleaning up a stale/duplicate draft:** try `trash_message` on its `messageId` first. It
+  needs `gmail.modify` scope, which this connector may or may not have at a given moment (it
+  didn't on 2026-09-24, then did after Tyler widened it) — if it errors with "Insufficient
+  scope," don't retry it blind; tell Tyler exactly which draft to delete manually (recipient +
+  approximate timestamp, since Gmail's Drafts list won't show a clean single identifier per
+  duplicate) and move on. If a stale draft sits in the same thread as a duplicate that gets
+  deleted through the Gmail UI (not via this tool), re-run `list_drafts` afterward rather than
+  assuming which one survived — deleting via the UI can behave unexpectedly (e.g. removing both
+  drafts in a thread at once, or resaving the remaining one with a new revision/messageId) and
+  this was observed live on 2026-09-24.
 - For `LinkedIn InMail` / `LinkedIn Connection Request` sources, there is no draft mechanism
   to use — replying via `inmail-hit-reply@linkedin.com` through Gmail would actually deliver
   the message into LinkedIn's system, so don't call any Gmail send/reply tool for these at
