@@ -59,9 +59,14 @@ both people's time.
 
 ## 2. Resume line: link only, never an attachment
 
-`{{ResumeLine}}` is always `You can find my resume at https://slightlytyler.github.io.` — the
-same wording regardless of Source/channel. Never attach the PDF and never claim one is
-attached.
+`{{ResumeLine}}` is always `You can find my resume at https://slightlytyler.github.io` — the
+same wording regardless of Source/channel, **with no trailing punctuation directly after the
+bare URL**. Confirmed 2026-09-24: Gmail's compose-time auto-linker swallows a period sitting
+right after a bare URL into the link target itself (verified via `get_draft`'s rendered
+`htmlBody`, which showed the href ending in `...github.io.` — the period baked into the
+click target). If a period is grammatically needed, put something after the URL instead of
+right after it, or just end the sentence at the URL with no punctuation, as above. Never
+attach the PDF and never claim one is attached.
 
 **Why not attach:** `create_draft`'s `attachments[].content` field takes a literal base64
 string in the tool call — there's no file-path passthrough. Getting Tyler's resume PDF
