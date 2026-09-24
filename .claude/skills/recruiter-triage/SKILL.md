@@ -20,10 +20,12 @@ The Gmail connector (`mcp__claude_ai_Gmail__*`) only supports **one account at a
 Run both queries with `search_threads` (`pageSize: 50`, `view: THREAD_VIEW_MINIMAL`):
 
 ```
-in:inbox after:2026/05/01 (recruiter OR recruiting OR "talent acquisition" OR "reaching out" OR "open role" OR "open position" OR "job opportunity" OR hiring) -category:promotions
+in:inbox after:2026/05/01 (recruiter OR recruiting OR talent OR "reaching out" OR "open role" OR "open position" OR "job opportunity" OR hiring OR "building out" OR "growing our team" OR "portfolio compan") -category:promotions
 
-in:inbox after:2026/05/01 (from:linkedin.com OR from:indeed.com OR from:greenhouse.io OR from:lever.co OR from:myworkday.com OR from:ziprecruiter.com)
+in:inbox after:2026/05/01 (from:linkedin.com OR from:indeed.com OR from:greenhouse.io OR from:lever.co OR from:myworkday.com OR from:ziprecruiter.com OR from:human.capital)
 ```
+
+**Confirmed miss, fixed 2026-09-24:** a real pitch from a VC talent partner (`mkeville@human.capital`, re: Erebor, thread `19ed8876bbf8ba42`) was missed entirely — it used none of the old keyword list's exact phrases ("recruiter," "recruiting," "talent acquisition," "reaching out," "open role," "open position," "job opportunity," "hiring"). Instead it said the portfolio company was *"building out its Product Engineering team"* and signed off *"Director, Talent"* — VC-affiliated talent partners and portfolio-company introductions often use this softer, non-recruiter-sounding phrasing rather than any of the original trigger words. Broadened the keyword list above (bare `talent` instead of the narrower quoted phrase, plus `"building out"`, `"growing our team"`, `"portfolio compan"`) and added `human.capital` to the domain list. **This class of miss can still recur** — any pitch that avoids all of "hiring/recruiter/open role/job opportunity"-style language and doesn't come from a known ATS/agency domain will slip through a keyword-based search no matter how many phrases get added. If Tyler flags a specific missed email again, don't just add its exact phrase to the list reactively — ask what natural-language framing it used and generalize a little, the same way this fix generalized from one exact phrase to a broader pattern.
 
 The first query is full-text and can exceed the tool's output size over a long date range — if it errors on size, split it by date into smaller chunks (e.g. `after:X before:Y` windows a few weeks wide) rather than narrowing the date range back down, and also add `-from:linkedin.com` to it once you've separately covered LinkedIn via the second query, since direct-agency-email senders (their own company domains, e.g. `@aspensearch.com`, `@ingreatco.com`) are exactly what the keyword query catches that the LinkedIn-sender query cannot.
 
@@ -81,6 +83,8 @@ One row per **recruiter relationship**, not per role — a single recruiter/comp
 - If it's genuinely unconfirmed whether two rows are the same person, merge anyway but flag it explicitly in Notes ("unconfirmed but treating as one contact") rather than leaving duplicate rows — a wrong merge is easy to split back out later; duplicate rows just create double outreach.
 
 **Do NOT merge different people at the same agency**, even when they're pitching the same or a near-identical role — this is a different situation and stays as separate rows. Example: Griffin Lewin, Ethan Christenson, and Victoria are three different named individuals who all appear to work for the same agency (signs off as "Quantum Talent") and independently pitched the same Replit role — confirmed via direct instruction from Tyler (2026-09-24) to keep these separate and warm each individually, since they're different relationships even if the underlying opportunity overlaps. The test is **same person**, not same agency or same role.
+
+**When discarding or de-duplicating a row, check for other channels before assuming the person is fully handled.** Confirmed 2026-09-24: Somie Shiraki's LinkedIn Connection Request row was correctly removed under the new "ignore connection requests" policy, but she also had a completely separate Direct Email thread (`somie.shiraki@joinhandshake.com`, a real back-and-forth with a substantive reply from Tyler) that the removal never touched or re-checked. The fix isn't to search exhaustively every time — it's to notice that a person's name/company you're removing or merging might also show up under a different address, and do a quick name search (same technique as step 2's "search by exact name/phrase" fallback) before considering that person's tracker presence complete.
 
 Columns:
 
