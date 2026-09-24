@@ -36,11 +36,28 @@ moment). Tyler reviews every draft and sends it himself. Concretely:
   assuming which one survived — deleting via the UI can behave unexpectedly (e.g. removing both
   drafts in a thread at once, or resaving the remaining one with a new revision/messageId) and
   this was observed live on 2026-09-24.
-- For `LinkedIn InMail` / `LinkedIn Connection Request` sources, there is no draft mechanism
-  to use — replying via `inmail-hit-reply@linkedin.com` through Gmail would actually deliver
-  the message into LinkedIn's system, so don't call any Gmail send/reply tool for these at
-  all. Instead, output the filled-in text directly in the conversation for Tyler to copy and
-  paste into LinkedIn himself.
+- **`LinkedIn InMail`** (sender `inmail-hit-reply@linkedin.com`): **use `create_draft` here
+  too.** Corrected 2026-09-24 — earlier versions of this skill claimed no draft mechanism
+  existed for LinkedIn threads at all; that was never actually tested and was wrong. A draft
+  is inert regardless of recipient: `create_draft` with `to: ["inmail-hit-reply@linkedin.com"]`
+  and `replyToMessageId` set to the InMail message's ID produces a normal Gmail draft
+  (`labelIds: ["DRAFT"]`, correctly threaded, "Re:" subject, original message quoted below —
+  confirmed via `get_draft` on a live test) that sits in Drafts exactly like a Direct Email
+  reply until Tyler sends it himself. Only an actual **send** would relay through LinkedIn and
+  deliver to the recruiter — never call `send_message`/`reply`/`forward` on it, per the hard
+  rule above, but `create_draft` is exactly as safe here as it is for Direct Email.
+- **`LinkedIn Connection Request`** (sender `invitations@linkedin.com`): still **no Gmail
+  draft** — this is a different, unverified mechanism. `invitations@linkedin.com` handles
+  connection invites, not messaging; there's no evidence replying to it delivers a message to
+  the sender the way InMail's reply-relay does, and accepting + messaging a new connection
+  only happens inside LinkedIn itself. Keep outputting the filled-in text directly in the
+  conversation for Tyler to copy and paste into LinkedIn after accepting.
+- **Gmail can silently merge unrelated connection-request emails into one thread.** Confirmed
+  2026-09-24: Steve Bonomo (SCALRR) and Brandon Roosevelt (Hex) — two different people, one
+  day apart — landed in the identical thread ID because both came from
+  `invitations@linkedin.com` with the generic subject "I want to connect." Don't assume a
+  shared thread ID means duplicate/related rows for connection requests; check the sender
+  name inside each message, not just the thread grouping.
 
 ## 1. Pull the row's details and pick a variant
 

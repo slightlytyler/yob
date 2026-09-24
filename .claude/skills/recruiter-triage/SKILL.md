@@ -34,9 +34,9 @@ Adjust the keyword list if results look thin, but keep queries concise (Gmail se
 **Keep** (these are trackable opportunities):
 - Direct emails from a named person at a recruiting agency or company (has a real reply-able email address).
 - LinkedIn InMail (`sender: inmail-hit-reply@linkedin.com`) — a real recruiter pitching a real role.
-- LinkedIn connection requests (`sender: invitations@linkedin.com`) whose personalized note — fetched in full, see step 4 — references a role, hiring, or a company. **Don't gate this on job title.** Founders, hiring managers, and generic "I work with 250+ startups" senders all pitch real roles this way just as often as people with a "recruiter" title; the title alone is not a reliable signal (see the Josh Markowitz / Hits Only example in step 4).
 
 **Discard as noise** (do not add rows for these):
+- **LinkedIn connection requests** (`sender: invitations@linkedin.com`), regardless of what the personalized note says. **Reversed 2026-09-24 by explicit instruction from Tyler** — this skill previously kept connection requests whose note referenced a role (added after the Josh Markowitz / Brandon Roosevelt hidden-note misses), but Tyler decided to ignore this source entirely going forward, and had the Brandon Roosevelt/Hex row removed from the tracker. Don't re-add this "keep if the note mentions a role" logic if you rediscover a good connection-request lead — that's the exact case this rule now excludes, on purpose. Existing tracker rows that trace back to a connection request (e.g. Steve Bonomo, Somie Shiraki, Josh Markowitz's follow-up) predate this rule and don't need to be retroactively removed unless Tyler asks.
 - `messages-noreply@linkedin.com` salary/market digests ("Senior Software Engineer insights: $XXXk/yr..."), "X is a top company hiring near you," "X people viewed your profile," "You're getting noticed."
 - `updates-noreply@linkedin.com` feed activity ("X recently posted," "X reacted to this post," "X and others share their thoughts").
 - `editors-noreply@linkedin.com` — LinkedIn News editorial content.
@@ -45,17 +45,13 @@ Adjust the keyword list if results look thin, but keep queries concise (Gmail se
 
 If genuinely unsure whether something counts, ask the user rather than guessing — cheap to check, expensive to pollute the tracker.
 
-## 4. Critical extraction rule: always fetch the full thread body — for InMail *and* connection requests
+## 4. Critical extraction rule: always fetch the full thread body for InMail
 
-**Never classify or write a row from the `search_threads` snippet alone, for either message type.** The snippet is unreliable in different ways for each:
+**Never classify or write a row from the `search_threads` snippet alone.** For InMail (`sender: inmail-hit-reply@linkedin.com`), the `from` header and subject line are useless for identifying who sent it — every InMail comes from the same relay address regardless of recruiter, and the subject is just the pitch's headline.
 
-**InMail** (`sender: inmail-hit-reply@linkedin.com`): the `from` header and subject line are useless for identifying who sent it — every InMail comes from the same relay address regardless of recruiter, and the subject is just the pitch's headline.
+To get the real name, agency, full pitch: call `get_thread` with `messageFormat: PLAIN_TEXT` on **every** InMail before deciding whether to keep it or how to fill its row. Use `PLAIN_TEXT`, not `FULL_CONTENT`'s `html_body` — LinkedIn's HTML rendering can drop content that's present in plaintext.
 
-**Connection requests** (`sender: invitations@linkedin.com`): the snippet usually shows only generic boilerplate — "X is waiting for your response," "X wants to connect" — even when the sender wrote a real personalized note pitching a specific role. That note is invisible until you fetch the thread. Example: a connection request from "Josh Markowitz, Founder @ Hits Only" had subject "I want to connect" and a snippet that said only "waiting for your response" — but the actual note read *"I might have an epic frontend role for you @ Circle or some other fantastic positions if you open to NYC."* Skipping the fetch on connection requests (as this skill used to instruct) misses exactly this kind of message, and title-based filtering would have excluded it too since "Founder" isn't a recruiting title.
-
-To get the real name, agency, full pitch, or personal note: call `get_thread` with `messageFormat: PLAIN_TEXT` on **every** InMail and every connection request before deciding whether to keep it or how to fill its row. Use `PLAIN_TEXT`, not `FULL_CONTENT`'s `html_body` — LinkedIn's HTML rendering can drop the personalized note entirely (confirmed on the Josh Markowitz thread: `html_body` only had the generic invite template plus "people you may know," while `plaintext_body` had the actual note) even though it's present in plaintext.
-
-For InMail, the recruiter's LinkedIn display name is the **first line of the body, directly above the repeated subject line and the "Reply" / `linkedin.com/messaging/thread/...` link**, e.g.:
+The recruiter's LinkedIn display name is the **first line of the body, directly above the repeated subject line and the "Reply" / `linkedin.com/messaging/thread/...` link**, e.g.:
 
 ```
 Let's Chat! Senior Full Stack Engineer @ Airbyte
@@ -71,11 +67,22 @@ Hey Tyler!
 
 Their title/agency is usually in the signature block at the end of the body (e.g. "Abby — Senior Technical Recruiter @ Airbyte", "Griffin Lewin — Director of Recruiting @ Quantum"). Never leave a row as "(unnamed recruiter)" without having tried `get_thread` first. While in there, also grab: comp range, location/remote policy, and whether the sender is in-house or a third-party agency (phrases like "I work with 250+ VC-backed startups" or "partnering with [company]" signal agency/embedded recruiter, not in-house).
 
-For connection requests, the personal note (if any) appears after the sender's name/title, before the "Accept" / "View profile" links — read it in full and use it to decide both inclusion (step 3) and the Role(s) Mentioned field, rather than defaulting to "Unspecified - no role pitched yet" without checking.
+**Not applicable to connection requests** — per step 3, `invitations@linkedin.com` messages are discarded outright regardless of their note content, so there's no extraction step for them anymore.
 
 ## 5. Tracker sheet schema
 
-One row per **recruiter relationship**, not per role — a single recruiter/company thread may branch into multiple roles over time, which goes in Notes rather than becoming a new row. Columns:
+One row per **recruiter relationship**, not per role — a single recruiter/company thread may branch into multiple roles over time, which goes in Notes rather than becoming a new row.
+
+**One row per recruiter, not per thread/domain — merge, don't multiply.** Confirmed 2026-09-24: the same real person sometimes emails from more than one domain (Brian Drumm from both `crestviewtalent.net` and `.co`; Victoria from both `tropetalent.io` and `.com`), or a thread flags itself as a probable repeat contact under a slightly different name (David / David Friedman across `coastalrecruiting.io` and `talentcompassco.com`). When you're confident it's the same person (same name, same agency, near-identical pitch) — or reasonably confident and no better explanation fits — merge into a single row rather than adding a new one:
+- **Date First Contact**: the earliest date across all their threads.
+- **Gmail Thread Link**: list the most recent thread first with "(most recent - warming this one)", then older thread(s) after with dates/domains noted — don't drop the older links, they're still useful history.
+- **Role(s) Mentioned**: note the most recently pitched role as the one being warmed, and summarize earlier-pitched role(s) briefly.
+- **Status / warming**: only the most recent thread gets a reply — see the `recruiter-warm-intro` skill, warm the newest thread only, don't reply to every domain a recruiter has used.
+- If it's genuinely unconfirmed whether two rows are the same person, merge anyway but flag it explicitly in Notes ("unconfirmed but treating as one contact") rather than leaving duplicate rows — a wrong merge is easy to split back out later; duplicate rows just create double outreach.
+
+**Do NOT merge different people at the same agency**, even when they're pitching the same or a near-identical role — this is a different situation and stays as separate rows. Example: Griffin Lewin, Ethan Christenson, and Victoria are three different named individuals who all appear to work for the same agency (signs off as "Quantum Talent") and independently pitched the same Replit role — confirmed via direct instruction from Tyler (2026-09-24) to keep these separate and warm each individually, since they're different relationships even if the underlying opportunity overlaps. The test is **same person**, not same agency or same role.
+
+Columns:
 
 | Column | Notes |
 |---|---|
