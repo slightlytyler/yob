@@ -113,9 +113,13 @@ Always show the filled draft in the conversation for review — even after calli
 `create_draft` for a `Direct Email` row, paste the same text back so Tyler doesn't have to
 open Gmail just to see what was drafted.
 
-## 4. After Tyler sends it himself
+## 4. Update the tracker's Status column
+
+As soon as a draft is created (Gmail) or text is handed over (LinkedIn), set that row's
+Status to `Drafted` in the tracker (see the `recruiter-triage` skill's update workflow) — this
+is what distinguishes "nothing done yet" from "ready for Tyler to review and send."
 
 This skill has no visibility into whether Tyler actually sent a draft — it only creates it
-(or hands over text for LinkedIn) and stops. Only update the tracker row's Status to
-`Responded` when Tyler explicitly confirms a reply went out; don't infer it from having
-created a draft.
+(or hands over text for LinkedIn) and stops. Only move a row's Status to `Responded` when
+Tyler explicitly confirms a reply went out; don't infer it from having created a draft, and
+don't leave it at `Not Responded` once a draft exists — that undercounts real progress.

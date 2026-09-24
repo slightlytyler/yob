@@ -85,7 +85,7 @@ One row per **recruiter relationship**, not per role — a single recruiter/comp
 | Source | `Direct Email` / `LinkedIn InMail` / `LinkedIn Connection Request` |
 | Contact Info | Real email for direct outreach; `Reply via LinkedIn thread (no email exposed)` for InMail/connection requests |
 | Role(s) Mentioned | |
-| Status | Only two values: `Responded` / `Not Responded` |
+| Status | Three values: `Not Responded` (default) / `Drafted` (a `recruiter-warm-intro` reply exists — as a Gmail draft or LinkedIn text handed to Tyler — but he hasn't confirmed sending it) / `Responded` (Tyler confirmed a reply actually went out) |
 | Gmail Thread Link | `https://mail.google.com/mail/u/0/#all/<threadId>` |
 | Source Inbox | Which connected Gmail account this came from (see step 1) |
 | Notes | Comp, location, flags (e.g. duplicate/lookalike-domain outreach, cross-references between recruiters at the same agency), anything time-sensitive |
