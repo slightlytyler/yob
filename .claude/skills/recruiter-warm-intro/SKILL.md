@@ -90,6 +90,20 @@ If the hosted resume at `https://slightlytyler.github.io` looks stale relative t
 row's date, regenerate it from the `resume` repo (see that repo's README) before drafting,
 rather than sending an outdated version — just don't attach it.
 
+**Confirmed limitation, don't re-litigate (2026-09-24):** every draft this connector creates
+via `create_draft`/`update_draft` wraps the resume link in Gmail's Safe Browsing redirect
+(`https://www.google.com/url?q=https://slightlytyler.github.io&source=gmail&ust=...&sa=E`),
+regardless of whether the URL comes from plain-text auto-linking or an explicit `<a href>` in
+`htmlBody` — both were tested directly on a live draft and produced the identical wrapped
+link. This is applied server-side at draft-creation time, not something the request content
+controls, so don't spend another round trying a different way to author the link. **The link
+still works** — it correctly redirects to the resume — this is cosmetic, not broken. The one
+observed way it resolves to a clean plain href is when Tyler opens/touches the draft in
+Gmail's own compose UI himself (seen on the Ben Herman draft); that can't be triggered from
+this tool. If Tyler flags this again, point him at this note rather than attempting another
+fix — the trailing-punctuation bug above is a separate, real, and already-fixed issue; this
+redirect-wrapping is not that, and isn't fixable from here.
+
 ## 3. Fill the template and confirm
 
 Substitute the chosen variant's placeholders — `{{FirstName}}`, `{{ResumeLine}}`, and either
