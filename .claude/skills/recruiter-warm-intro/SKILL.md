@@ -107,6 +107,17 @@ If the hosted resume at `https://slightlytyler.github.io` looks stale relative t
 row's date, regenerate it from the `resume` repo (see that repo's README) before drafting,
 rather than sending an outdated version — just don't attach it.
 
+**Second confirmed incident, 2026-09-30:** despite the above already being documented, a draft
+for Bruce/foundr.xyz was created with body text claiming "Resume attached, and you can find an
+up to date version at..." — no file was actually attached, so the draft was factually wrong the
+moment it was created. On the same run, an attempt to actually attach the PDF (base64-encoding
+`Tyler_Martinez_CV.pdf` and passing it through `Read`) burned a large chunk of context on a
+40K+ character, single-line base64 blob and was abandoned incomplete. **Don't re-attempt this,
+and don't write "resume attached" (or any wording implying a file is included) in any draft
+body, for any Source.** The `{{ResumeLine}}` text in step 2 above is the only resume-related
+sentence any draft should ever contain — copy it verbatim rather than improvising a variant
+that mentions an attachment.
+
 **Confirmed limitation, don't re-litigate (2026-09-24):** every draft this connector creates
 via `create_draft`/`update_draft` wraps the resume link in Gmail's Safe Browsing redirect
 (`https://www.google.com/url?q=https://slightlytyler.github.io&source=gmail&ust=...&sa=E`),
